@@ -1,0 +1,253 @@
+// SG Math Pal - Prisma Schema
+// Tiered mastery system for math learning
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================================
+// STUDENT PROFILES
+// ==========================================
+
+model Student {
+  id            String   @id @default(cuid())
+  name          String
+  avatar        String   @default("rocket") // Icon name
+  color         String   @default("#7c3aed") // Theme color
+  totalXp       Int      @default(0)
+  currentStreak Int      @default(0)
+  bestStreak    Int      @default(0)
+  lastActiveAt  DateTime @default(now())
+  isActive      Boolean  @default(true) // Currently selected profile
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  topicProgress   TopicProgress[]
+  questionAttempts QuestionAttempt[]
+  tierChallenges  TierChallenge[]
+  badges          Badge[]
+
+  @@index([isActive])
+}
+
+// ==========================================
+// TOPICS (Math Subject Areas)
+// ==========================================
+
+model Topic {
+  id          String   @id @default(cuid())
+  slug        String   @unique // "geometry", "fractions", etc.
+  name        String   // "Geometry"
+  description String?
+  icon        String   @default("circle") // Lucide icon name
+  color       String   @default("#3b82f6") // Planet color
+  orderIndex  Int      @default(0) // Display order
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  questions      Question[]
+  topicProgress  TopicProgress[]
+  tierChallenges TierChallenge[]
+
+  @@index([slug])
+  @@index([orderIndex])
+}
+
+// ==========================================
+// QUESTIONS
+// ==========================================
+
+model Question {
+  id              String   @id @default(cuid())
+  topicId         String
+  slug            String   @unique // "geo-t3-corner-cut-001"
+  tier            Int      // 1-5 (Iron, Bronze, Silver, Gold, Platinum)
+  title           String   // Short title
+  content         String   // Question text with LaTeX (stored as MDX)
+  answer          String   // Correct answer
+  answerType      String   @default("exact") // exact, numeric, multiple-choice
+  acceptedAnswers String?  // JSON array of alternative correct answers
+  hints           String?  // JSON array of progressive hints
+  solution        String?  // Full worked solution (LaTeX supported)
+  heuristic       String?  // "model-method", "gap-difference", etc.
+  source          String?  // "nmos", "sasmo", "aops", "school"
+  sourceYear      Int?     // Year of the source paper
+  sourceQuestion  Int?     // Question number in source
+  xpValue         Int      @default(10) // Base XP for this question
+  isChallengeQuestion Boolean @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  topic              Topic                   @relation(fields: [topicId], references: [id])
+  attempts           QuestionAttempt[]
+  challengeQuestions TierChallengeQuestion[]
+
+  @@index([topicId, tier])
+  @@index([tier])
+  @@index([isChallengeQuestion])
+}
+
+// ==========================================
+// TOPIC PROGRESS (Per Student, Per Topic)
+// ==========================================
+
+model TopicProgress {
+  id                  String    @id @default(cuid())
+  studentId           String
+  topicId             String
+
+  // Current Tier Status
+  currentTier         Int       @default(1) // 1=Iron, 2=Bronze, 3=Silver, 4=Gold, 5=Platinum
+  tierXp              Int       @default(0) // XP accumulated in current tier
+  tierXpRequired      Int       @default(100) // XP needed to unlock promotion challenge
+
+  // Promotion Status
+  canAttemptPromotion Boolean   @default(false)
+  promotionAttempts   Int       @default(0)
+  lastPromotionAt     DateTime?
+
+  // Statistics
+  questionsAttempted  Int       @default(0)
+  questionsCorrect    Int       @default(0)
+  perfectAnswers      Int       @default(0) // Correct without hints
+  totalTimeSpent      Int       @default(0) // Seconds
+  averageTime         Int?      // Avg seconds per question
+
+  // Timestamps
+  tierUnlockedAt      DateTime  @default(now())
+  lastPracticedAt     DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  student        Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topic          Topic           @relation(fields: [topicId], references: [id])
+  tierChallenges TierChallenge[]
+
+  @@unique([studentId, topicId])
+  @@index([studentId])
+  @@index([currentTier])
+}
+
+// ==========================================
+// QUESTION ATTEMPTS
+// ==========================================
+
+model QuestionAttempt {
+  id          String   @id @default(cuid())
+  studentId   String
+  questionId  String
+  sessionType String   @default("practice") // practice, challenge, review
+  userAnswer  String
+  isCorrect   Boolean
+  hintsUsed   Int      @default(0)
+  timeSpent   Int      // Seconds
+  xpEarned    Int      @default(0)
+  quality     Int?     // Self-rated difficulty 1-3 for spaced repetition
+  createdAt   DateTime @default(now())
+
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@index([studentId, createdAt])
+  @@index([questionId])
+}
+
+// ==========================================
+// TIER CHALLENGES
+// ==========================================
+
+model TierChallenge {
+  id              String    @id @default(cuid())
+  studentId       String
+  topicProgressId String
+  topicId         String
+  fromTier        Int       // Current tier (1-4)
+  toTier          Int       // Target tier (2-5)
+
+  // Configuration
+  requiredCorrect Int       // Number needed to pass
+  totalQuestions  Int
+  timeLimit       Int?      // Seconds (null = no limit)
+  allowHints      Boolean   @default(false)
+
+  // Results
+  status          String    @default("in_progress") // in_progress, passed, failed
+  correctAnswers  Int       @default(0)
+  incorrectAnswers Int      @default(0)
+  hintsUsed       Int       @default(0)
+  totalTime       Int       @default(0)
+  xpEarned        Int       @default(0)
+
+  // Timestamps
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+
+  student       Student                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topicProgress TopicProgress           @relation(fields: [topicProgressId], references: [id])
+  topic         Topic                   @relation(fields: [topicId], references: [id])
+  questions     TierChallengeQuestion[]
+
+  @@index([studentId, status])
+  @@index([topicProgressId])
+}
+
+model TierChallengeQuestion {
+  id          String    @id @default(cuid())
+  challengeId String
+  questionId  String
+  orderIndex  Int
+  userAnswer  String?
+  isCorrect   Boolean?
+  hintsUsed   Int       @default(0)
+  timeSpent   Int       @default(0)
+  answeredAt  DateTime?
+
+  challenge TierChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  question  Question      @relation(fields: [questionId], references: [id])
+
+  @@index([challengeId])
+}
+
+// ==========================================
+// BADGES & ACHIEVEMENTS
+// ==========================================
+
+model Badge {
+  id        String   @id @default(cuid())
+  studentId String
+  type      String   // Badge type identifier
+  name      String   // Display name
+  description String?
+  icon      String   @default("award")
+  topic     String?  // For topic-specific badges
+  tier      Int?     // For tier-specific badges
+  metadata  String?  // JSON for additional data
+  earnedAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([type])
+}
+
+// ==========================================
+// PDF IMPORTS (for tracking imported papers)
+// ==========================================
+
+model ImportedPDF {
+  id            String   @id @default(cuid())
+  filename      String
+  source        String?  // "nmos", "sasmo", etc.
+  year          Int?
+  questionsCount Int     @default(0)
+  status        String   @default("processing") // processing, completed, failed
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+  completedAt   DateTime?
+}

@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* KaTeX CSS */
+@import 'katex/dist/katex.min.css';
+
+@layer base {
+  :root {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 14%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 14%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 25%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-space-bg text-foreground font-sans;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+}
+
+/* Custom scrollbar for space theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f0f23;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a4a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a5a;
+}
+
+/* Stars background animation */
+.stars-bg {
+  background-image:
+    radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 160px 120px, #fff, transparent),
+    radial-gradient(1px 1px at 230px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 300px 150px, rgba(255,255,255,0.9), transparent);
+  background-repeat: repeat;
+  background-size: 350px 200px;
+  animation: stars-move 100s linear infinite;
+}
+
+@keyframes stars-move {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 350px 200px;
+  }
+}
+
+/* KaTeX overrides for better visibility on dark background */
+.katex {
+  font-size: 1.2em;
+  color: #fff;
+}
+
+.katex-display {
+  margin: 1.5em 0;
+  padding: 1em;
+  background: rgba(26, 26, 46, 0.5);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+/* Tier badge glow effects */
+.tier-iron {
+  box-shadow: 0 0 10px rgba(113, 113, 122, 0.5);
+}
+
+.tier-bronze {
+  box-shadow: 0 0 15px rgba(205, 127, 50, 0.5);
+}
+
+.tier-silver {
+  box-shadow: 0 0 20px rgba(192, 192, 192, 0.5);
+}
+
+.tier-gold {
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+}
+
+.tier-platinum {
+  box-shadow: 0 0 30px rgba(229, 228, 226, 0.6);
+}
+
+/* Planet hover effects */
+.planet {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.planet:hover {
+  transform: scale(1.05);
+}
+
+/* XP bar animation */
+.xp-fill {
+  transition: width 0.5s ease-out;
+}
+
+/* Canvas scratchpad styles */
+.scratchpad-canvas {
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Responsive text sizes */
+.text-display {
+  @apply text-2xl md:text-3xl lg:text-4xl;
+}
+
+.text-heading {
+  @apply text-xl md:text-2xl lg:text-3xl;
+}
+
+/* Question card styles */
+.question-card {
+  @apply bg-space-card border border-space-border rounded-2xl p-6;
+  @apply shadow-lg shadow-nebula-purple/10;
+}
+
+/* Button glow on hover */
+.btn-glow:hover {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+}
