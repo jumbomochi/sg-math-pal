@@ -84,11 +84,25 @@ export const BADGE_DEFINITIONS: BadgeDefinition[] = [
 
   // Streak badges
   {
+    type: 'getting-started',
+    name: 'Getting Started',
+    description: 'Maintain a 3-day practice streak',
+    icon: 'rocket',
+    condition: { type: 'day_streak', days: 3 },
+  },
+  {
     type: 'week-warrior',
     name: 'Week Warrior',
     description: 'Maintain a 7-day practice streak',
     icon: 'flame',
     condition: { type: 'day_streak', days: 7 },
+  },
+  {
+    type: 'fortnight-fighter',
+    name: 'Fortnight Fighter',
+    description: 'Maintain a 14-day practice streak',
+    icon: 'swords',
+    condition: { type: 'day_streak', days: 14 },
   },
   {
     type: 'month-master',
@@ -171,9 +185,19 @@ export function checkAttemptBadges(context: AttemptContext): string[] {
     earnedBadgeTypes.push('math-wizard');
   }
 
+  // Getting started (3 day streak)
+  if (context.dayStreak >= 3) {
+    earnedBadgeTypes.push('getting-started');
+  }
+
   // Week warrior (7 day streak)
   if (context.dayStreak >= 7) {
     earnedBadgeTypes.push('week-warrior');
+  }
+
+  // Fortnight fighter (14 day streak)
+  if (context.dayStreak >= 14) {
+    earnedBadgeTypes.push('fortnight-fighter');
   }
 
   // Month master (30 day streak)

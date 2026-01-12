@@ -27,8 +27,8 @@ export function SoundProvider({ children }: SoundProviderProps) {
   // Load mute preference on mount
   useEffect(() => {
     setIsMuted(getMuted());
-    // Preload common sounds
-    preloadSounds(['correct', 'incorrect', 'click']);
+    // Initialize audio context
+    preloadSounds();
   }, []);
 
   const toggleMute = useCallback(() => {

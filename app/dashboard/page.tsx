@@ -1,7 +1,8 @@
 import { prisma } from '@/lib/db';
 import { PlanetMap } from '@/components/dashboard/PlanetMap';
 import { XPBar } from '@/components/game/XPBar';
-import { Flame, Trophy } from 'lucide-react';
+import { Flame, Trophy, Brain } from 'lucide-react';
+import Link from 'next/link';
 
 async function getDashboardData() {
   // Get active student
@@ -22,11 +23,35 @@ async function getDashboardData() {
     orderBy: { orderIndex: 'asc' },
   });
 
-  return { student, topics };
+  // Get review stats for active student
+  let reviewStats = { dueToday: 0, mastered: 0 };
+  if (student) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const dueCount = await prisma.questionMastery.count({
+      where: {
+        studentId: student.id,
+        nextReviewDate: { lte: now },
+      },
+    });
+
+    const masteredCount = await prisma.questionMastery.count({
+      where: {
+        studentId: student.id,
+        repetitions: { gte: 5 },
+        easeFactor: { gte: 2.0 },
+      },
+    });
+
+    reviewStats = { dueToday: dueCount, mastered: masteredCount };
+  }
+
+  return { student, topics, reviewStats };
 }
 
 export default async function DashboardPage() {
-  const { student, topics } = await getDashboardData();
+  const { student, topics, reviewStats } = await getDashboardData();
 
   if (!student) {
     return (
@@ -60,7 +85,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12 max-w-5xl mx-auto">
         {/* Total XP */}
         <div className="bg-space-card/50 backdrop-blur-sm border border-space-border rounded-xl p-6">
           <div className="flex items-center gap-3 mb-3">
@@ -116,6 +141,36 @@ export default async function DashboardPage() {
             ))}
           </div>
         </div>
+
+        {/* Review */}
+        <Link
+          href="/review"
+          className="bg-space-card/50 backdrop-blur-sm border border-space-border rounded-xl p-6 hover:border-nebula-purple/50 transition-colors group"
+        >
+          <div className="flex items-center gap-3 mb-3">
+            <Brain className="w-6 h-6 text-nebula-purple" />
+            <span className="text-gray-400 text-sm">Spaced Review</span>
+          </div>
+          {reviewStats.dueToday > 0 ? (
+            <>
+              <p className="text-3xl font-bold text-nebula-purple">
+                {reviewStats.dueToday}
+              </p>
+              <p className="mt-2 text-sm text-gray-400 group-hover:text-white transition-colors">
+                questions due today →
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-3xl font-bold text-success-green">
+                ✓
+              </p>
+              <p className="mt-2 text-sm text-gray-400">
+                All caught up!
+              </p>
+            </>
+          )}
+        </Link>
       </div>
 
       {/* Planet Map */}
