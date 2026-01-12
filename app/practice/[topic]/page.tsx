@@ -30,17 +30,20 @@ async function getTopicData(topicSlug: string) {
     },
   });
 
-  // Get questions for current tier (or tier 1 if no progress)
+  // Get questions for current tier AND next tier (to preview harder content)
+  // Once promoted, previous tier questions no longer appear
   const currentTier = progress?.currentTier ?? 1;
+  const nextTier = Math.min(currentTier + 1, 5);
   const questions = await prisma.question.findMany({
     where: {
       topicId: topic.id,
       tier: {
-        lte: currentTier, // Include questions up to current tier
+        gte: currentTier, // Current tier and above
+        lte: nextTier,    // But not more than one tier above
       },
     },
     orderBy: [
-      { tier: 'asc' },
+      { tier: 'asc' },    // Current tier first
       { createdAt: 'asc' },
     ],
   });
