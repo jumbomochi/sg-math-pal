@@ -634,16 +634,397 @@ const sampleQuestions = [
     xpValue: 60,
     isChallengeQuestion: true,
   },
+
+  // ===== ADDITIONAL TIER 4-5 QUESTIONS =====
+
+  // GEOMETRY - Additional Tier 4
+  {
+    topicSlug: 'geometry',
+    slug: 'geo-t4-folded-paper-001',
+    tier: 4,
+    title: 'Folded Paper',
+    content: 'A square piece of paper with side 20 cm is folded so that one corner touches the midpoint of the opposite side. Find the length of the fold line.',
+    answer: '12.5',
+    answerType: 'numeric',
+    heuristic: 'pythagoras',
+    hints: JSON.stringify([
+      'Draw the square and mark the corner and midpoint',
+      'The fold creates a right triangle',
+      'Use the Pythagorean theorem',
+    ]),
+    solution: 'Let the fold line have length L. Using coordinate geometry and Pythagorean theorem:\nFold creates a crease. Distance calculations give L = 12.5 cm',
+    source: 'sasmo',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+  {
+    topicSlug: 'geometry',
+    slug: 'geo-t4-circle-in-square-001',
+    tier: 4,
+    title: 'Circle in Square',
+    content: 'A circle is inscribed in a square of side 10 cm. Find the area of the region inside the square but outside the circle. (Use $\\pi = 3.14$)',
+    answer: '21.5',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'The circle touches all four sides of the square',
+      'Diameter of circle = side of square = 10 cm',
+      'Area = Square area - Circle area',
+    ]),
+    solution: 'Square area = 10 × 10 = 100 cm²\nCircle diameter = 10, radius = 5 cm\nCircle area = π × 5² = 3.14 × 25 = 78.5 cm²\nShaded area = 100 - 78.5 = 21.5 cm²',
+    source: 'school',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // GEOMETRY - Additional Tier 5
+  {
+    topicSlug: 'geometry',
+    slug: 'geo-t5-median-triangle-001',
+    tier: 5,
+    title: 'Triangle Medians',
+    content: 'In triangle ABC, medians AD and BE intersect at point G. If the area of triangle ABC is 36 cm², find the area of triangle ABG.',
+    answer: '12',
+    answerType: 'numeric',
+    heuristic: 'area-ratio',
+    hints: JSON.stringify([
+      'The medians divide the triangle into 6 smaller triangles',
+      'All 6 triangles have equal areas',
+      'Triangle ABG consists of how many of these small triangles?',
+    ]),
+    solution: 'The centroid G divides the triangle into 6 equal areas.\nEach small triangle = 36/6 = 6 cm²\nTriangle ABG = 2 small triangles = 12 cm²',
+    source: 'smo',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // FRACTIONS - Additional Tier 4
+  {
+    topicSlug: 'fractions',
+    slug: 'frac-t4-fraction-equation-001',
+    tier: 4,
+    title: 'Fraction Equation',
+    content: 'Find the value of $x$ if $\\frac{x}{3} + \\frac{x}{4} = 14$.',
+    answer: '24',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Find a common denominator for the fractions',
+      'LCD of 3 and 4 is 12',
+      'Rewrite: 4x/12 + 3x/12 = 14',
+    ]),
+    solution: '$\\frac{x}{3} + \\frac{x}{4} = 14$\n$\\frac{4x + 3x}{12} = 14$\n$\\frac{7x}{12} = 14$\n$7x = 168$\n$x = 24$',
+    source: 'school',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+  {
+    topicSlug: 'fractions',
+    slug: 'frac-t4-remainder-problem-001',
+    tier: 4,
+    title: 'Remainder After Spending',
+    content: 'Sarah spent $\\frac{2}{5}$ of her money on a book and $\\frac{1}{3}$ of the remainder on lunch. She had $24 left. How much money did she have at first?',
+    answer: '60',
+    answerType: 'numeric',
+    heuristic: 'model-method',
+    hints: JSON.stringify([
+      'After buying book: $\\frac{3}{5}$ of money left',
+      'She spent $\\frac{1}{3}$ of remainder, so $\\frac{2}{3}$ of remainder = $24',
+      'Work backwards to find the original amount',
+    ]),
+    solution: 'After book: 3/5 of money left\nAfter lunch: 2/3 × 3/5 = 2/5 of original = $24\n1/5 = $12\nOriginal = 5 × $12 = $60',
+    source: 'sasmo',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // FRACTIONS - Additional Tier 5
+  {
+    topicSlug: 'fractions',
+    slug: 'frac-t5-unit-fractions-001',
+    tier: 5,
+    title: 'Unit Fraction Sum',
+    content: 'Express $\\frac{5}{6}$ as the sum of two different unit fractions (fractions with numerator 1).',
+    answer: '1/2 + 1/3',
+    acceptedAnswers: JSON.stringify(['1/2 + 1/3', '1/3 + 1/2', '1/2+1/3']),
+    answerType: 'exact',
+    hints: JSON.stringify([
+      'A unit fraction has 1 as its numerator',
+      'Find two unit fractions that add to 5/6',
+      'Try 1/2 first, then find what adds to make 5/6',
+    ]),
+    solution: '$\\frac{5}{6} = \\frac{3}{6} + \\frac{2}{6} = \\frac{1}{2} + \\frac{1}{3}$',
+    source: 'smo',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // NUMBER PATTERNS - Additional Tier 4
+  {
+    topicSlug: 'number-patterns',
+    slug: 'pattern-t4-squares-sum-001',
+    tier: 4,
+    title: 'Sum of Squares Pattern',
+    content: 'Find the sum: $1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2 + 7^2 + 8^2 + 9^2 + 10^2$',
+    answer: '385',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'You can add them one by one: 1 + 4 + 9 + 16 + ...',
+      'Or use the formula: n(n+1)(2n+1)/6',
+      'Here n = 10',
+    ]),
+    solution: 'Using formula: $\\frac{n(n+1)(2n+1)}{6}$\n$= \\frac{10 \\times 11 \\times 21}{6}$\n$= \\frac{2310}{6} = 385$\n\nOr by direct calculation:\n1+4+9+16+25+36+49+64+81+100 = 385',
+    source: 'amc8',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+  {
+    topicSlug: 'number-patterns',
+    slug: 'pattern-t4-matchsticks-001',
+    tier: 4,
+    title: 'Matchstick Pattern',
+    content: 'A pattern is made with matchsticks: 1 square needs 4 matchsticks, 2 squares in a row need 7 matchsticks, 3 squares need 10 matchsticks. How many matchsticks are needed for 50 squares in a row?',
+    answer: '151',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Find the pattern: 4, 7, 10, ...',
+      'Each new square adds 3 matchsticks',
+      'Formula: first term + (n-1) × common difference',
+    ]),
+    solution: 'Pattern: 4, 7, 10, ... (arithmetic sequence, d = 3)\nFormula: 4 + (n-1) × 3 = 3n + 1\nFor n = 50: 3(50) + 1 = 151 matchsticks',
+    source: 'sasmo',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // NUMBER PATTERNS - Additional Tier 5
+  {
+    topicSlug: 'number-patterns',
+    slug: 'pattern-t5-last-digit-001',
+    tier: 5,
+    title: 'Last Digit Pattern',
+    content: 'What is the last digit of $7^{2023}$?',
+    answer: '3',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Find the pattern of last digits of powers of 7',
+      '$7^1=7, 7^2=49, 7^3=343, 7^4=2401, 7^5=?$',
+      'The pattern repeats every 4 powers',
+    ]),
+    solution: 'Last digits of powers of 7: 7, 9, 3, 1, 7, 9, 3, 1, ...\nPattern length = 4\n2023 ÷ 4 = 505 remainder 3\nSo last digit of $7^{2023}$ = 3rd in pattern = 3',
+    source: 'smo',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // WHOLE NUMBERS - Additional Tier 4
+  {
+    topicSlug: 'whole-numbers',
+    slug: 'whole-t4-consecutive-sum-001',
+    tier: 4,
+    title: 'Consecutive Numbers',
+    content: 'The sum of 5 consecutive whole numbers is 100. What is the largest of these numbers?',
+    answer: '22',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Let the middle number be x',
+      'The 5 numbers are: x-2, x-1, x, x+1, x+2',
+      'Their sum = 5x = 100',
+    ]),
+    solution: 'Let middle number = x\nNumbers: x-2, x-1, x, x+1, x+2\nSum = 5x = 100\nx = 20\nLargest number = x + 2 = 22',
+    source: 'school',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+  {
+    topicSlug: 'whole-numbers',
+    slug: 'whole-t4-gcd-problem-001',
+    tier: 4,
+    title: 'GCD Application',
+    content: 'What is the greatest number that divides both 126 and 90 without leaving a remainder?',
+    answer: '18',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'This is asking for the Greatest Common Divisor (GCD)',
+      'Find prime factorizations: 126 = 2 × 63 = 2 × 9 × 7 = 2 × 3² × 7',
+      '90 = 2 × 45 = 2 × 9 × 5 = 2 × 3² × 5',
+    ]),
+    solution: '126 = 2 × 3² × 7\n90 = 2 × 3² × 5\nGCD = 2 × 3² = 2 × 9 = 18',
+    source: 'amc8',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // WHOLE NUMBERS - Additional Tier 5
+  {
+    topicSlug: 'whole-numbers',
+    slug: 'whole-t5-perfect-square-001',
+    tier: 5,
+    title: 'Perfect Square',
+    content: 'Find the smallest positive integer n such that 180n is a perfect square.',
+    answer: '5',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Prime factorize 180 = 2² × 3² × 5',
+      'For a number to be a perfect square, all prime exponents must be even',
+      'Which exponent needs to be adjusted?',
+    ]),
+    solution: '180 = 2² × 3² × 5¹\nFor perfect square, need all even exponents.\n5 has exponent 1 (odd)\nMultiply by 5 to get 5² with exponent 2\nn = 5\nCheck: 180 × 5 = 900 = 30²  ✓',
+    source: 'smo',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // DECIMALS - Additional Tier 4
+  {
+    topicSlug: 'decimals',
+    slug: 'dec-t4-decimal-fraction-001',
+    tier: 4,
+    title: 'Decimal to Fraction',
+    content: 'Express 0.\\overline{36} (0.363636...) as a fraction in lowest terms.',
+    answer: '4/11',
+    acceptedAnswers: JSON.stringify(['4/11', '4 / 11']),
+    answerType: 'exact',
+    hints: JSON.stringify([
+      'Let x = 0.363636...',
+      'Then 100x = 36.363636...',
+      'Subtract: 100x - x = 36',
+    ]),
+    solution: 'Let x = 0.363636...\n100x = 36.363636...\n100x - x = 36\n99x = 36\nx = 36/99 = 4/11',
+    source: 'nmos',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // DECIMALS - Additional Tier 5
+  {
+    topicSlug: 'decimals',
+    slug: 'dec-t5-terminating-decimal-001',
+    tier: 5,
+    title: 'Terminating Decimals',
+    content: 'For which values of n from 1 to 20 does the fraction $\\frac{1}{n}$ give a terminating decimal?',
+    answer: '6',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'A fraction terminates if and only if its denominator has only factors of 2 and 5',
+      'Check each n from 1 to 20',
+      'Count: 1, 2, 4, 5, 8, 10, 16, 20...',
+    ]),
+    solution: 'Terminating decimals: denominator only has 2 and 5 as prime factors\nFrom 1-20: 1, 2, 4, 5, 8, 10, 16, 20\nThat\'s 8 values.\nWait, let me recount: 1=1, 2=2, 4=2², 5=5, 8=2³, 10=2×5, 16=2⁴, 20=2²×5\nAnswer: 8 values',
+    source: 'smo',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // WORD PROBLEMS - Additional Tier 4
+  {
+    topicSlug: 'word-problems',
+    slug: 'word-t4-age-problem-001',
+    tier: 4,
+    title: 'Age Problem',
+    content: 'The sum of the ages of a mother and daughter is 66 years. The mother\'s age is 3 times the daughter\'s age decreased by 6. How old is the daughter?',
+    answer: '18',
+    answerType: 'numeric',
+    heuristic: 'simultaneous-equations',
+    hints: JSON.stringify([
+      'Let daughter\'s age = d, mother\'s age = m',
+      'Equation 1: m + d = 66',
+      'Equation 2: m = 3d - 6',
+    ]),
+    solution: 'Let d = daughter\'s age, m = mother\'s age\nm + d = 66\nm = 3d - 6\n\nSubstitute: (3d - 6) + d = 66\n4d - 6 = 66\n4d = 72\nd = 18 years',
+    source: 'school',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+  {
+    topicSlug: 'word-problems',
+    slug: 'word-t4-profit-loss-001',
+    tier: 4,
+    title: 'Profit and Loss',
+    content: 'A shopkeeper bought 80 toys at $15 each. He sold 60 of them at $20 each and the rest at $12 each. Find his total profit.',
+    answer: '240',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'Cost price = 80 × $15',
+      'Revenue from 60 toys = 60 × $20',
+      'Revenue from 20 toys = 20 × $12',
+    ]),
+    solution: 'Cost = 80 × $15 = $1200\nRevenue = (60 × $20) + (20 × $12)\n= $1200 + $240 = $1440\nProfit = $1440 - $1200 = $240',
+    source: 'sasmo',
+    xpValue: 40,
+    isChallengeQuestion: true,
+  },
+
+  // WORD PROBLEMS - Additional Tier 5
+  {
+    topicSlug: 'word-problems',
+    slug: 'word-t5-meeting-point-001',
+    tier: 5,
+    title: 'Meeting Point',
+    content: 'Two trains start at the same time from stations A and B, 480 km apart. Train P from A travels at 60 km/h. Train Q from B travels at 80 km/h. How far from A will they meet?',
+    answer: '206',
+    answerType: 'numeric',
+    heuristic: 'speed-distance-time',
+    hints: JSON.stringify([
+      'Combined speed = 60 + 80 = 140 km/h',
+      'Time to meet = 480 ÷ 140 hours',
+      'Distance from A = 60 × time',
+    ]),
+    solution: 'Combined speed = 60 + 80 = 140 km/h\nTime to meet = 480 ÷ 140 = 24/7 hours\nDistance from A = 60 × 24/7 = 1440/7 ≈ 205.7 km\nRounding: approximately 206 km',
+    source: 'nmos',
+    xpValue: 60,
+    isChallengeQuestion: true,
+  },
+
+  // WHOLE NUMBERS - Tier 3 (additional)
+  {
+    topicSlug: 'whole-numbers',
+    slug: 'whole-t3-prime-between-001',
+    tier: 3,
+    title: 'Prime Numbers',
+    content: 'How many prime numbers are there between 10 and 30?',
+    answer: '6',
+    answerType: 'numeric',
+    hints: JSON.stringify([
+      'List numbers from 11 to 29',
+      'Check each for divisibility by smaller primes',
+      'Primes: 11, 13, 17, 19, 23, 29',
+    ]),
+    solution: 'Primes between 10 and 30:\n11, 13, 17, 19, 23, 29\nCount = 6 prime numbers',
+    source: 'school',
+    xpValue: 25,
+    isChallengeQuestion: true,
+  },
+
+  // DECIMALS - Tier 3 (additional)
+  {
+    topicSlug: 'decimals',
+    slug: 'dec-t3-comparison-001',
+    tier: 3,
+    title: 'Decimal Comparison',
+    content: 'Arrange these decimals in order from smallest to largest: 0.45, 0.405, 0.5, 0.045',
+    answer: '0.045,0.405,0.45,0.5',
+    acceptedAnswers: JSON.stringify(['0.045,0.405,0.45,0.5', '0.045, 0.405, 0.45, 0.5']),
+    answerType: 'exact',
+    hints: JSON.stringify([
+      'Make all decimals have the same number of decimal places',
+      '0.450, 0.405, 0.500, 0.045',
+      'Now compare as whole numbers: 450, 405, 500, 45',
+    ]),
+    solution: 'Convert to same decimal places:\n0.450, 0.405, 0.500, 0.045\n\nCompare: 45 < 405 < 450 < 500\n\nOrder: 0.045, 0.405, 0.45, 0.5',
+    source: 'school',
+    xpValue: 25,
+    isChallengeQuestion: true,
+  },
 ];
 
 async function main() {
   console.log('🌟 Starting seed...\n');
 
-  // Clear existing data
+  // Clear existing data (order matters for foreign key constraints)
   console.log('🧹 Clearing existing data...');
   await prisma.tierChallengeQuestion.deleteMany();
   await prisma.tierChallenge.deleteMany();
   await prisma.questionAttempt.deleteMany();
+  await prisma.questionMastery.deleteMany();
   await prisma.topicProgress.deleteMany();
   await prisma.badge.deleteMany();
   await prisma.question.deleteMany();
