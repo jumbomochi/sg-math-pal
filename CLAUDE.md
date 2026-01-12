@@ -82,8 +82,9 @@ A Math Study Partner designed for a gifted 9-year-old student in Singapore. The 
 ## Development Commands
 
 ```bash
-# Start development server
+# Start development server (runs on port 3001)
 npm run dev
+# Access via the forwarded port URL in VS Code/Codespaces PORTS tab
 
 # Database commands
 npx prisma generate          # Generate Prisma client
