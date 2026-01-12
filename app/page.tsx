@@ -9,7 +9,7 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
       {/* Animated Logo */}
       <motion.div
-        initial={{ scale: 0, rotate: -180 }}
+        initial={false}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: 'spring', duration: 1, bounce: 0.5 }}
         className="relative"
@@ -32,7 +32,7 @@ export default function HomePage() {
 
       {/* Title */}
       <motion.h1
-        initial={{ opacity: 0, y: 20 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
         className="mt-8 text-4xl md:text-5xl font-bold text-white text-center"
@@ -41,7 +41,7 @@ export default function HomePage() {
       </motion.h1>
 
       <motion.p
-        initial={{ opacity: 0, y: 20 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
         className="mt-4 text-xl text-muted-foreground text-center max-w-md"
@@ -52,7 +52,7 @@ export default function HomePage() {
       {/* Start Button */}
       <Link href="/dashboard">
         <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 1 }}
           whileHover={{ scale: 1.05 }}
@@ -66,7 +66,7 @@ export default function HomePage() {
 
       {/* Features Preview */}
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
         className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl"
@@ -78,7 +78,7 @@ export default function HomePage() {
         ].map((feature, i) => (
           <motion.div
             key={feature.title}
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.7 + i * 0.2 }}
             className="bg-space-card/50 backdrop-blur-sm border border-space-border rounded-2xl p-6 text-center"
@@ -92,7 +92,7 @@ export default function HomePage() {
 
       {/* Version badge */}
       <motion.div
-        initial={{ opacity: 0 }}
+        initial={false}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
         className="mt-12 text-xs text-muted-foreground"

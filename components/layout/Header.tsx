@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Rocket, Flame, Star, Menu, User } from 'lucide-react';
+import { Rocket, Flame, Star, Menu, User, FileUp } from 'lucide-react';
 import { useState } from 'react';
 import { SoundToggle } from '@/components/audio/SoundToggle';
 
@@ -46,6 +46,15 @@ export function Header({
               <Flame className="h-5 w-5 text-comet-orange" />
               <span className="font-semibold text-comet-orange">{currentStreak} day streak</span>
             </div>
+
+            {/* Import Button */}
+            <Link
+              href="/import"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-nebula-purple/20 hover:bg-nebula-purple/30 border border-nebula-purple/30 transition-colors"
+            >
+              <FileUp className="h-4 w-4 text-nebula-purple" />
+              <span className="text-sm text-nebula-purple font-medium">Import</span>
+            </Link>
 
             {/* Sound Toggle */}
             <SoundToggle size="sm" />
@@ -112,6 +121,14 @@ export function Header({
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Question Bank
+                </Link>
+                <Link
+                  href="/import"
+                  className="px-4 py-2 rounded-lg hover:bg-white/10 text-nebula-purple transition-colors flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <FileUp className="h-4 w-4" />
+                  Import Questions
                 </Link>
               </nav>
             </div>

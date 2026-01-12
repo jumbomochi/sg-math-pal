@@ -241,13 +241,15 @@ model Badge {
 // ==========================================
 
 model ImportedPDF {
-  id            String   @id @default(cuid())
-  filename      String
-  source        String?  // "nmos", "sasmo", etc.
-  year          Int?
-  questionsCount Int     @default(0)
-  status        String   @default("processing") // processing, completed, failed
-  errorMessage  String?
-  createdAt     DateTime @default(now())
-  completedAt   DateTime?
+  id             String    @id @default(cuid())
+  filename       String
+  source         String?   // "nmos", "sasmo", etc.
+  year           Int?
+  defaultTier    Int?      // Default tier for imported questions
+  questionsCount Int       @default(0)
+  status         String    @default("processing") // processing, ready_for_review, completed, failed
+  extractedData  String?   // JSON blob for temporary question storage during review
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime?
 }

@@ -27,6 +27,9 @@ const config: Config = {
           silver: '#94a3b8',
           bronze: '#cd7f32',
         },
+        comet: {
+          orange: '#f97316',
+        },
         planet: {
           blue: '#3b82f6',
           green: '#22c55e',
@@ -94,6 +97,7 @@ const config: Config = {
         'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
         'twinkle': 'twinkle 3s ease-in-out infinite',
         'orbit': 'orbit 20s linear infinite',
+        'shooting-star': 'shooting-star 3s ease-in-out infinite',
       },
       keyframes: {
         float: {
@@ -111,6 +115,12 @@ const config: Config = {
         orbit: {
           '0%': { transform: 'rotate(0deg)' },
           '100%': { transform: 'rotate(360deg)' },
+        },
+        'shooting-star': {
+          '0%': { transform: 'translateX(0) translateY(0)', opacity: '0' },
+          '10%': { opacity: '1' },
+          '70%': { opacity: '1' },
+          '100%': { transform: 'translateX(300px) translateY(300px)', opacity: '0' },
         },
       },
     },

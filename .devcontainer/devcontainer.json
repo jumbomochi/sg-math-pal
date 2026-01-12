@@ -17,6 +17,12 @@
     }
   },
   "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js Dev Server",
+      "onAutoForward": "notify"
+    }
+  },
   "postCreateCommand": "npm install && npx prisma generate",
   "remoteUser": "node"
 }
