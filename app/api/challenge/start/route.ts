@@ -4,7 +4,16 @@ import { getChallengeConfig, isChallengeOnCooldown } from '@/lib/tier-challenge'
 
 export async function POST(request: NextRequest) {
   try {
-    const { studentId, topicId } = await request.json();
+    const body = await request.json();
+    const { studentId, topicId } = body;
+
+    // Validate required parameters
+    if (!studentId || !topicId) {
+      return NextResponse.json(
+        { error: 'Missing required parameters: studentId and topicId are required' },
+        { status: 400 }
+      );
+    }
 
     // Get the student's topic progress
     const topicProgress = await prisma.topicProgress.findUnique({

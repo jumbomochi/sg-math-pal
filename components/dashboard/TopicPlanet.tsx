@@ -34,9 +34,8 @@ export function TopicPlanet({ topic, progress, index }: TopicPlanetProps) {
   const isMaxTier = tier >= 5;
 
   // Get the icon component dynamically
-  const IconComponent = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[
-    topic.icon.charAt(0).toUpperCase() + topic.icon.slice(1).replace(/-([a-z])/g, (_, c) => c.toUpperCase())
-  ] || LucideIcons.Circle;
+  const iconName = topic.icon.charAt(0).toUpperCase() + topic.icon.slice(1).replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+  const IconComponent = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Circle;
 
   return (
     <motion.div

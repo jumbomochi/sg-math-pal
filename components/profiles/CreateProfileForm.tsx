@@ -35,9 +35,8 @@ export function CreateProfileForm({ onSubmit, onCancel }: CreateProfileFormProps
   };
 
   // Get the selected avatar icon
-  const SelectedAvatarIcon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[
-    avatar.charAt(0).toUpperCase() + avatar.slice(1).replace(/-([a-z])/g, (_, c) => c.toUpperCase())
-  ] || LucideIcons.User;
+  const avatarIconName = avatar.charAt(0).toUpperCase() + avatar.slice(1).replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+  const SelectedAvatarIcon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[avatarIconName] || LucideIcons.User;
 
   return (
     <motion.form
@@ -77,9 +76,8 @@ export function CreateProfileForm({ onSubmit, onCancel }: CreateProfileFormProps
         <label className="block text-sm text-gray-400 mb-2">Avatar</label>
         <div className="grid grid-cols-4 gap-2">
           {AVATARS.map((av) => {
-            const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[
-              av.charAt(0).toUpperCase() + av.slice(1).replace(/-([a-z])/g, (_, c) => c.toUpperCase())
-            ] || LucideIcons.User;
+            const iconName = av.charAt(0).toUpperCase() + av.slice(1).replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+            const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[iconName] || LucideIcons.User;
 
             return (
               <button

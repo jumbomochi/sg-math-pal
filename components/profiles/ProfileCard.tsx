@@ -20,9 +20,8 @@ interface ProfileCardProps {
 
 export function ProfileCard({ profile, onSelect, isSelected = false }: ProfileCardProps) {
   // Get avatar icon dynamically
-  const AvatarIcon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[
-    profile.avatar.charAt(0).toUpperCase() + profile.avatar.slice(1).replace(/-([a-z])/g, (_, c) => c.toUpperCase())
-  ] || LucideIcons.User;
+  const avatarIconName = profile.avatar.charAt(0).toUpperCase() + profile.avatar.slice(1).replace(/-([a-z])/g, (_, c: string) => c.toUpperCase());
+  const AvatarIcon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[avatarIconName] || LucideIcons.User;
 
   return (
     <motion.button

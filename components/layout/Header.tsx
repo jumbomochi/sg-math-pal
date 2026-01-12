@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Rocket, Flame, Star, Menu, User, FileUp } from 'lucide-react';
+import { Rocket, Flame, Star, Menu, User, FileUp, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { SoundToggle } from '@/components/audio/SoundToggle';
 
@@ -46,6 +46,15 @@ export function Header({
               <Flame className="h-5 w-5 text-comet-orange" />
               <span className="font-semibold text-comet-orange">{currentStreak} day streak</span>
             </div>
+
+            {/* Stats Button */}
+            <Link
+              href="/stats"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            >
+              <BarChart3 className="h-4 w-4 text-gray-300" />
+              <span className="text-sm text-gray-300 font-medium">Stats</span>
+            </Link>
 
             {/* Import Button */}
             <Link
@@ -107,6 +116,14 @@ export function Header({
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Dashboard
+                </Link>
+                <Link
+                  href="/stats"
+                  className="px-4 py-2 rounded-lg hover:bg-white/10 text-gray-300 transition-colors flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <BarChart3 className="h-4 w-4" />
+                  Progress Stats
                 </Link>
                 <Link
                   href="/profiles"

@@ -7,7 +7,26 @@
       "Bash(npx prisma db push:*)",
       "Bash(npm run db:seed:*)",
       "Bash(curl:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(xargs ls:*)",
+      "Bash(sqlite3:*)",
+      "Bash(npm run dev:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(pkill:*)",
+      "Bash(netstat:*)",
+      "Bash(ss:*)",
+      "Bash(echo:*)",
+      "Bash(npx next dev:*)",
+      "Bash(find:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx prisma db seed)",
+      "Bash(npx tsx:*)",
+      "Bash(git add:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(pgrep:*)"
     ]
   }
 }
