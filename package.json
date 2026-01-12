@@ -42,6 +42,11 @@
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
+  "overrides": {
+    "react-canvas-draw": {
+      "react": "^18.3.1"
+    }
+  },
   "devDependencies": {
     "@prisma/client": "^6.19.1",
     "@types/mdx": "^2.0.13",
