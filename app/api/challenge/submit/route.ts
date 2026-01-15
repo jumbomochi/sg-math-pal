@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
+
+// Input validation schema
+const submitSchema = z.object({
+  challengeId: z.string().min(1, 'Challenge ID is required'),
+  challengeQuestionId: z.string().min(1, 'Challenge question ID is required'),
+  userAnswer: z.string(),
+  isCorrect: z.boolean(),
+  timeSpent: z.number().int().min(0),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { challengeId, challengeQuestionId, userAnswer, isCorrect, timeSpent } = await request.json();
+    const body = await request.json();
+
+    // Validate input with zod
+    const parseResult = submitSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: parseResult.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { challengeId, challengeQuestionId, userAnswer, isCorrect, timeSpent } = parseResult.data;
 
     // Get the challenge to verify it's still in progress
     const challenge = await prisma.tierChallenge.findUnique({

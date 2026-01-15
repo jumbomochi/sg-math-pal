@@ -1,10 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
-import { getChallengeConfig, getTierName, calculateChallengeResult } from '@/lib/tier-challenge';
+import { getChallengeConfig, getTierName, calculateChallengeResult, TIER_XP_THRESHOLDS } from '@/lib/tier-challenge';
+
+// Input validation schema
+const completeSchema = z.object({
+  challengeId: z.string().min(1, 'Challenge ID is required'),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { challengeId } = await request.json();
+    const body = await request.json();
+
+    // Validate input
+    const parseResult = completeSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: parseResult.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const { challengeId } = parseResult.data;
 
     // Get the challenge with all questions
     const challenge = await prisma.tierChallenge.findUnique({
@@ -73,7 +90,7 @@ export async function POST(request: NextRequest) {
         data: {
           currentTier: challenge.toTier,
           tierXp: 0, // Reset tier XP for new tier
-          tierXpRequired: getTierXpRequired(challenge.toTier),
+          tierXpRequired: TIER_XP_THRESHOLDS[challenge.toTier] || 100,
           canAttemptPromotion: false,
           lastPromotionAt: new Date(),
           tierUnlockedAt: new Date(),
@@ -127,18 +144,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function getTierXpRequired(tier: number): number {
-  // XP needed to unlock next tier's challenge
-  const xpRequirements: Record<number, number> = {
-    1: 100,
-    2: 200,
-    3: 300,
-    4: 400,
-    5: 0, // Max tier
-  };
-  return xpRequirements[tier] || 100;
-}
-
 async function awardTierBadge(studentId: string, tier: number, topicSlug: string) {
   const tierBadges: Record<number, { type: string; name: string; description: string; icon: string }> = {
     2: {
@@ -170,17 +175,16 @@ async function awardTierBadge(studentId: string, tier: number, topicSlug: string
   const badgeInfo = tierBadges[tier];
   if (!badgeInfo) return;
 
-  // Check if badge already exists for this tier
-  const existingBadge = await prisma.badge.findFirst({
-    where: {
-      studentId,
-      type: badgeInfo.type,
-    },
-  });
-
-  if (!existingBadge) {
-    await prisma.badge.create({
-      data: {
+  // Use upsert to handle race conditions - unique constraint prevents duplicates
+  try {
+    await prisma.badge.upsert({
+      where: {
+        studentId_type: {
+          studentId,
+          type: badgeInfo.type,
+        },
+      },
+      create: {
         studentId,
         type: badgeInfo.type,
         name: badgeInfo.name,
@@ -189,6 +193,9 @@ async function awardTierBadge(studentId: string, tier: number, topicSlug: string
         topic: topicSlug,
         tier,
       },
+      update: {}, // No update if exists
     });
+  } catch {
+    // Ignore unique constraint errors - badge already exists
   }
 }

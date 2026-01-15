@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import {
   calculateNextReview,
@@ -9,20 +10,43 @@ import {
 import { checkAttemptBadges, getBadgeDefinition } from '@/lib/badges';
 import { calculateStreakUpdate, getStreakMessage } from '@/lib/streak';
 
+// Input validation schemas
+const getReviewSchema = z.object({
+  studentId: z.string().min(1, 'Student ID is required'),
+  topicId: z.string().optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+});
+
+const postReviewSchema = z.object({
+  studentId: z.string().min(1, 'Student ID is required'),
+  questionId: z.string().min(1, 'Question ID is required'),
+  userAnswer: z.string().optional().default(''),
+  isCorrect: z.boolean(),
+  quality: z.number().int().min(1).max(3).optional(),
+  hintsUsed: z.number().int().min(0).default(0),
+  timeSpent: z.number().int().min(0).default(0),
+});
+
 // GET /api/review - Get questions due for review
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const studentId = searchParams.get('studentId');
-    const topicId = searchParams.get('topicId');
-    const limit = parseInt(searchParams.get('limit') || '10');
 
-    if (!studentId) {
+    // Validate input
+    const parseResult = getReviewSchema.safeParse({
+      studentId: searchParams.get('studentId'),
+      topicId: searchParams.get('topicId'),
+      limit: searchParams.get('limit'),
+    });
+
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'studentId is required' },
+        { error: 'Invalid input', details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
+
+    const { studentId, topicId, limit } = parseResult.data;
 
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -114,22 +138,25 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // Validate input
+    const parseResult = postReviewSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        { error: 'Invalid input', details: parseResult.error.flatten() },
+        { status: 400 }
+      );
+    }
+
     const {
       studentId,
       questionId,
       userAnswer,
       isCorrect,
       quality,
-      hintsUsed = 0,
-      timeSpent = 0,
-    } = body;
-
-    if (!studentId || !questionId) {
-      return NextResponse.json(
-        { error: 'studentId and questionId are required' },
-        { status: 400 }
-      );
-    }
+      hintsUsed,
+      timeSpent,
+    } = parseResult.data;
 
     // Get or create mastery record
     let mastery = await prisma.questionMastery.findUnique({
@@ -159,7 +186,7 @@ export async function POST(request: NextRequest) {
       lastQuality: mastery.lastQuality,
     };
 
-    const reviewQuality: Quality = quality || (isCorrect ? 2 : 1);
+    const reviewQuality: Quality = (quality as Quality) || (isCorrect ? 2 : 1);
     const update = calculateNextReview(masteryState, reviewQuality, isCorrect);
 
     // Update mastery record
@@ -184,7 +211,7 @@ export async function POST(request: NextRequest) {
       data: {
         studentId,
         questionId,
-        userAnswer: userAnswer || '',
+        userAnswer,
         isCorrect,
         hintsUsed,
         timeSpent,
@@ -219,12 +246,12 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Update student total XP and streak
+      // Get student to calculate streak updates
       const student = await prisma.student.findUnique({
         where: { id: studentId },
       });
 
-      if (student && isCorrect) {
+      if (student) {
         // Calculate daily streak update
         const streakUpdate = calculateStreakUpdate(
           student.lastActiveAt,
@@ -232,14 +259,21 @@ export async function POST(request: NextRequest) {
           student.bestStreak
         );
 
-        // Update student with XP and streak
+        // Calculate new correct answer streak (cached value)
+        // If correct, increment; if incorrect, reset to 0
+        const newCorrectAnswerStreak = isCorrect
+          ? student.correctAnswerStreak + 1
+          : 0;
+
+        // Update student with XP, streaks, and cached correct answer streak
         await prisma.student.update({
           where: { id: studentId },
           data: {
-            totalXp: { increment: xpEarned },
+            totalXp: isCorrect ? { increment: xpEarned } : undefined,
             lastActiveAt: new Date(),
             currentStreak: streakUpdate.currentStreak,
             bestStreak: streakUpdate.bestStreak,
+            correctAnswerStreak: newCorrectAnswerStreak,
           },
         });
 
@@ -251,78 +285,69 @@ export async function POST(request: NextRequest) {
           streakBroken: streakUpdate.streakBroken,
         };
 
-        // Get total correct answers for badge checking
-        const totalCorrect = await prisma.questionAttempt.count({
-          where: { studentId, isCorrect: true },
-        });
+        if (isCorrect) {
+          // Get total correct answers for badge checking
+          const totalCorrect = await prisma.questionAttempt.count({
+            where: { studentId, isCorrect: true },
+          });
 
-        // Get correct streak
-        const recentAttempts = await prisma.questionAttempt.findMany({
-          where: { studentId },
-          orderBy: { createdAt: 'desc' },
-          take: 20,
-        });
-
-        let correctStreak = 0;
-        for (const att of recentAttempts) {
-          if (att.isCorrect) {
-            correctStreak++;
-          } else {
-            break;
-          }
-        }
-
-        // Get updated progress for badge check
-        const updatedProgress = await prisma.topicProgress.findUnique({
-          where: {
-            studentId_topicId: {
-              studentId,
-              topicId: question.topicId,
-            },
-          },
-        });
-
-        // Check for badges
-        const earnedBadgeTypes = checkAttemptBadges({
-          isCorrect,
-          hintsUsed,
-          timeSpent,
-          currentStreak: correctStreak,
-          perfectAnswers: updatedProgress?.perfectAnswers || 0,
-          totalCorrect,
-          dayStreak: streakUpdate.currentStreak,
-        });
-
-        // Award new badges
-        const existingBadges = await prisma.badge.findMany({
-          where: {
-            studentId,
-            type: { in: earnedBadgeTypes },
-          },
-          select: { type: true },
-        });
-
-        const existingTypes = new Set(existingBadges.map((b) => b.type));
-        const newBadgeTypes = earnedBadgeTypes.filter((t) => !existingTypes.has(t));
-
-        for (const badgeType of newBadgeTypes) {
-          const definition = getBadgeDefinition(badgeType);
-          if (definition) {
-            await prisma.badge.create({
-              data: {
+          // Get updated progress for badge check
+          const updatedProgress = await prisma.topicProgress.findUnique({
+            where: {
+              studentId_topicId: {
                 studentId,
-                type: definition.type,
-                name: definition.name,
-                description: definition.description,
-                icon: definition.icon,
+                topicId: question.topicId,
               },
-            });
-            newBadges.push({
-              type: definition.type,
-              name: definition.name,
-              description: definition.description,
-              icon: definition.icon,
-            });
+            },
+          });
+
+          // Check for badges using the cached correctAnswerStreak
+          const earnedBadgeTypes = checkAttemptBadges({
+            isCorrect,
+            hintsUsed,
+            timeSpent,
+            currentStreak: newCorrectAnswerStreak,
+            perfectAnswers: updatedProgress?.perfectAnswers || 0,
+            totalCorrect,
+            dayStreak: streakUpdate.currentStreak,
+          });
+
+          // Award new badges using upsert pattern to handle race conditions
+          for (const badgeType of earnedBadgeTypes) {
+            const definition = getBadgeDefinition(badgeType);
+            if (definition) {
+              try {
+                const badge = await prisma.badge.upsert({
+                  where: {
+                    studentId_type: {
+                      studentId,
+                      type: definition.type,
+                    },
+                  },
+                  create: {
+                    studentId,
+                    type: definition.type,
+                    name: definition.name,
+                    description: definition.description,
+                    icon: definition.icon,
+                  },
+                  update: {},
+                });
+
+                // Only add to newBadges if this was just created
+                const isNew = new Date().getTime() - badge.earnedAt.getTime() < 1000;
+                if (isNew) {
+                  newBadges.push({
+                    type: definition.type,
+                    name: definition.name,
+                    description: definition.description,
+                    icon: definition.icon,
+                  });
+                }
+              } catch {
+                // Ignore unique constraint errors
+              }
+            }
           }
         }
       }

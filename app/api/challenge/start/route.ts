@@ -1,19 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { prisma } from '@/lib/db';
 import { getChallengeConfig, isChallengeOnCooldown } from '@/lib/tier-challenge';
+
+// Input validation schema
+const startSchema = z.object({
+  studentId: z.string().min(1, 'Student ID is required'),
+  topicId: z.string().min(1, 'Topic ID is required'),
+});
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { studentId, topicId } = body;
 
-    // Validate required parameters
-    if (!studentId || !topicId) {
+    // Validate input with zod
+    const parseResult = startSchema.safeParse(body);
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Missing required parameters: studentId and topicId are required' },
+        { error: 'Invalid input', details: parseResult.error.flatten() },
         { status: 400 }
       );
     }
+
+    const { studentId, topicId } = parseResult.data;
 
     // Get the student's topic progress
     const topicProgress = await prisma.topicProgress.findUnique({
