@@ -34,15 +34,33 @@ For each question found, extract:
 - **word-problems**: Multi-step problems, speed-distance-time, ratio, percentage (if not fitting above)
 
 ## Tier Assignment Guide (Singapore Primary Math):
-- **Tier 1 (Iron)**: Basic computation, direct application, single-step
+IMPORTANT: Be strict with tier assignment. Most school exam questions are Tier 1-2.
+
+- **Tier 1 (Iron)**: Basic computation, direct application, standard word problems (1-2 steps)
   - Example: "Calculate 3/4 + 1/2"
-- **Tier 2 (Bronze)**: Standard word problems, 1-2 steps
   - Example: "Mary has 15 apples. She gives 3 to John. How many does she have left?"
-- **Tier 3 (Silver)**: Singapore heuristics required (model method, work backwards)
+  - Example: "Find the area of a rectangle 5cm by 8cm"
+  - Most Section A and simple Section B questions belong here
+
+- **Tier 2 (Bronze)**: Singapore heuristics required (model method, work backwards, gap & difference, before-after)
   - Example: "After giving away 2/5 of his marbles, Ali had 36 left. How many did he have at first?"
-- **Tier 4 (Gold)**: Non-routine, multi-concept, competition prep (NMOS, SASMO level)
+  - Example: "John has twice as many stickers as Mary. Together they have 45 stickers."
+  - Requires drawing bar models or working backwards
+
+- **Tier 3 (Silver)**: Multi-step heuristics, non-routine problems, challenging school paper questions
   - Example: "The ratio of boys to girls was 3:5. After 12 boys left, the ratio became 1:3..."
-- **Tier 5 (Platinum)**: Olympiad level, proofs, exceptional difficulty (SMO Junior)
+  - Combines multiple concepts or requires creative problem-solving
+  - SASMO qualifying round level
+
+- **Tier 4 (Gold)**: Competition-level challenging questions (NMOS, SASMO finals level)
+  - Requires advanced heuristics or unusual approaches
+  - Multi-concept problems with tricky conditions
+  - Would challenge most P4-P5 students even with guidance
+
+- **Tier 5 (Platinum)**: Olympiad level only (SMO Junior, RIPMWC)
+  - Proof-based problems or exceptional difficulty
+  - Rarely found in regular school papers
+  - Only assign if question would appear in actual olympiad
 
 ## LaTeX Formatting:
 - Fractions: \\frac{numerator}{denominator}

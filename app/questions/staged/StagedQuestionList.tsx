@@ -106,60 +106,60 @@ export function StagedQuestionList({ sourceFiles }: Props) {
         <select
           value={status}
           onChange={e => { setStatus(e.target.value); setPage(0); }}
-          className="border rounded-lg px-3 py-2"
+          className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
         >
-          <option value="pending">Pending</option>
-          <option value="needs_edit">Needs Edit</option>
-          <option value="approved">Approved</option>
-          <option value="rejected">Rejected</option>
-          <option value="all">All</option>
+          <option value="pending" className="bg-gray-800 text-white">Pending</option>
+          <option value="needs_edit" className="bg-gray-800 text-white">Needs Edit</option>
+          <option value="approved" className="bg-gray-800 text-white">Approved</option>
+          <option value="rejected" className="bg-gray-800 text-white">Rejected</option>
+          <option value="all" className="bg-gray-800 text-white">All</option>
         </select>
 
         <select
           value={topic}
           onChange={e => { setTopic(e.target.value); setPage(0); }}
-          className="border rounded-lg px-3 py-2"
+          className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
         >
-          <option value="">All Topics</option>
+          <option value="" className="bg-gray-800 text-white">All Topics</option>
           {topics.map(t => (
-            <option key={t} value={t}>{t}</option>
+            <option key={t} value={t} className="bg-gray-800 text-white">{t}</option>
           ))}
         </select>
 
         <select
           value={tier}
           onChange={e => { setTier(e.target.value); setPage(0); }}
-          className="border rounded-lg px-3 py-2"
+          className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
         >
-          <option value="">All Tiers</option>
+          <option value="" className="bg-gray-800 text-white">All Tiers</option>
           {[1, 2, 3, 4, 5].map(t => (
-            <option key={t} value={t}>Tier {t}</option>
+            <option key={t} value={t} className="bg-gray-800 text-white">Tier {t}</option>
           ))}
         </select>
 
         <select
           value={sourceFile}
           onChange={e => { setSourceFile(e.target.value); setPage(0); }}
-          className="border rounded-lg px-3 py-2"
+          className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white"
         >
-          <option value="">All Sources</option>
+          <option value="" className="bg-gray-800 text-white">All Sources</option>
           {sourceFiles.map(f => (
-            <option key={f} value={f}>{f}</option>
+            <option key={f} value={f} className="bg-gray-800 text-white">{f}</option>
           ))}
         </select>
       </div>
 
       {/* Bulk Actions */}
       {selected.size > 0 && (
-        <div className="flex items-center gap-3 mb-4 p-3 bg-blue-50 rounded-lg">
-          <span className="font-medium">{selected.size} selected</span>
+        <div className="flex items-center gap-3 mb-4 p-3 bg-nebula-purple/20 border border-nebula-purple/30 rounded-lg">
+          <span className="font-medium text-white">{selected.size} selected</span>
           <Button size="sm" variant="outline" onClick={() => handleBulkAction('approve')}>
             <Check className="w-4 h-4 mr-1" /> Approve All
           </Button>
           <Button size="sm" variant="outline" onClick={() => handleBulkAction('reject')}>
             <X className="w-4 h-4 mr-1" /> Reject All
           </Button>
-          <Button size="sm" variant="outline" className="text-red-600" onClick={() => handleBulkAction('delete')}>
+          <Button size="sm" variant="outline" className="text-red-400 border-red-400/50" onClick={() => handleBulkAction('delete')}>
             <Trash2 className="w-4 h-4 mr-1" /> Delete
           </Button>
         </div>
@@ -167,9 +167,9 @@ export function StagedQuestionList({ sourceFiles }: Props) {
 
       {/* List */}
       {loading ? (
-        <div className="text-center py-8">Loading...</div>
+        <div className="text-center py-8 text-gray-300">Loading...</div>
       ) : questions.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No questions found</div>
+        <div className="text-center py-8 text-gray-400">No questions found</div>
       ) : (
         <>
           <div className="mb-2">
@@ -180,13 +180,13 @@ export function StagedQuestionList({ sourceFiles }: Props) {
                 onChange={selectAll}
                 className="rounded"
               />
-              <span className="text-sm text-gray-600">Select all on this page</span>
+              <span className="text-sm text-gray-300">Select all on this page</span>
             </label>
           </div>
 
           <div className="space-y-3">
             {questions.map(q => (
-              <Card key={q.id} className="p-4">
+              <Card key={q.id} className="p-4 bg-white/10 border-white/20">
                 <div className="flex items-start gap-3">
                   <input
                     type="checkbox"
@@ -195,36 +195,36 @@ export function StagedQuestionList({ sourceFiles }: Props) {
                     className="mt-1 rounded"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs bg-gray-100 px-2 py-0.5 rounded">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className="text-xs bg-white/20 text-gray-200 px-2 py-0.5 rounded">
                         {q.sourceFile}
                       </span>
                       {q.sourceQuestionNum && (
-                        <span className="text-xs text-gray-500">Q{q.sourceQuestionNum}</span>
+                        <span className="text-xs text-gray-300">Q{q.sourceQuestionNum}</span>
                       )}
                       {q.suggestedTopic && (
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                        <span className="text-xs bg-blue-500/30 text-blue-200 px-2 py-0.5 rounded">
                           {q.suggestedTopic}
                         </span>
                       )}
                       {q.suggestedTier && (
-                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded">
+                        <span className="text-xs bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded">
                           Tier {q.suggestedTier}
                         </span>
                       )}
                       {q.aiConfidence !== null && (
                         <span className={`text-xs px-2 py-0.5 rounded ${
-                          q.aiConfidence >= 0.8 ? 'bg-green-100 text-green-800' :
-                          q.aiConfidence >= 0.6 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                          q.aiConfidence >= 0.8 ? 'bg-green-500/30 text-green-200' :
+                          q.aiConfidence >= 0.6 ? 'bg-yellow-500/30 text-yellow-200' :
+                          'bg-red-500/30 text-red-200'
                         }`}>
                           {Math.round(q.aiConfidence * 100)}% conf
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-800 line-clamp-2">{q.content}</p>
+                    <p className="text-sm text-gray-100 line-clamp-2">{q.content}</p>
                     {q.answer && (
-                      <p className="text-xs text-gray-500 mt-1">Answer: {q.answer}</p>
+                      <p className="text-xs text-gray-400 mt-1">Answer: {q.answer}</p>
                     )}
                   </div>
                   <Button size="sm" variant="outline" onClick={() => setReviewQuestion(q)}>
@@ -237,7 +237,7 @@ export function StagedQuestionList({ sourceFiles }: Props) {
 
           {/* Pagination */}
           <div className="flex items-center justify-between mt-4">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-300">
               Showing {page * limit + 1}-{Math.min((page + 1) * limit, total)} of {total}
             </span>
             <div className="flex gap-2">
