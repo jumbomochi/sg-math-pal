@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Rocket, Flame, Star, Menu, User, FileUp, BarChart3 } from 'lucide-react';
+import { Rocket, Flame, Star, Menu, User, FileUp, BarChart3, ListChecks } from 'lucide-react';
 import { useState } from 'react';
 import { SoundToggle } from '@/components/audio/SoundToggle';
 
@@ -54,6 +54,15 @@ export function Header({
             >
               <BarChart3 className="h-4 w-4 text-gray-300" />
               <span className="text-sm text-gray-300 font-medium">Stats</span>
+            </Link>
+
+            {/* Review Queue Button */}
+            <Link
+              href="/questions/staged"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            >
+              <ListChecks className="h-4 w-4 text-gray-300" />
+              <span className="text-sm text-gray-300 font-medium">Review</span>
             </Link>
 
             {/* Import Button */}
@@ -138,6 +147,14 @@ export function Header({
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Question Bank
+                </Link>
+                <Link
+                  href="/questions/staged"
+                  className="px-4 py-2 rounded-lg hover:bg-white/10 text-gray-300 transition-colors flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ListChecks className="h-4 w-4" />
+                  Review Queue
                 </Link>
                 <Link
                   href="/import"

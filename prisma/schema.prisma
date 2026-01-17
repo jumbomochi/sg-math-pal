@@ -289,3 +289,48 @@ model ImportedPDF {
   createdAt      DateTime  @default(now())
   completedAt    DateTime?
 }
+
+// ==========================================
+// STAGED QUESTIONS (Batch Import Review)
+// ==========================================
+
+model StagedQuestion {
+  id                String   @id @default(cuid())
+
+  // Source tracking
+  sourceFile        String   // "2025_EOY_RedSwastika.pdf"
+  sourcePage        Int?     // Page number in PDF
+  sourceSection     String?  // "Section A", "Section B", "Section C"
+  sourceQuestionNum String?  // "Q5", "Q12a"
+
+  // Extracted content
+  content           String   // Question text (LaTeX supported)
+  answer            String?  // Extracted answer if found
+  answerType        String   @default("numeric")
+  acceptedAnswers   String?  // JSON array of alternatives
+  hints             String?  // JSON array
+  solution          String?  // Worked solution
+
+  // AI-assigned (editable in review)
+  suggestedTopic    String?  // "geometry", "fractions", etc.
+  suggestedTier     Int?     // 1-4
+  aiConfidence      Float?   // 0.0-1.0
+  aiReasoning       String?  // Why AI chose this tier/topic
+
+  // Review workflow
+  status            String   @default("pending") // pending, approved, rejected, needs_edit
+  reviewNotes       String?  // Notes during review
+
+  // Final values (set when approved)
+  finalTopic        String?
+  finalTier         Int?
+
+  // Metadata
+  extractedAt       DateTime @default(now())
+  reviewedAt        DateTime?
+  approvedQuestionId String? // Links to Question after approval
+
+  @@index([status])
+  @@index([sourceFile])
+  @@index([suggestedTopic, suggestedTier])
+}

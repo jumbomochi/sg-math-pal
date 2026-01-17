@@ -9,7 +9,9 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "import:pdfs": "tsx scripts/batch-import-pdfs.ts --folder=./pdfs",
+    "import:pdfs:dry": "tsx scripts/batch-import-pdfs.ts --folder=./pdfs --dry-run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.52.0",

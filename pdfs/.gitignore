@@ -1,0 +1,6 @@
+# Ignore all PDFs (large files)
+*.pdf
+# But keep the progress file
+!.import-progress.json
+# Keep gitkeep
+!.gitkeep
