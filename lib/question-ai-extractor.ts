@@ -1,6 +1,7 @@
 // Claude AI integration for extracting math questions from PDF text
 // Uses Anthropic SDK to process and structure questions
 
+import 'dotenv/config';
 import Anthropic from '@anthropic-ai/sdk';
 import {
   ExtractedQuestion,
@@ -116,7 +117,7 @@ export async function extractQuestionsWithAI(
     try {
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4096,
+        max_tokens: 8192,
         system: EXTRACTION_SYSTEM_PROMPT,
         messages: [
           {
@@ -229,6 +230,62 @@ function splitIntoChunks(text: string, maxCharsPerChunk = 15000): string[] {
 }
 
 /**
+ * Attempt to repair truncated JSON by closing unclosed brackets
+ */
+function repairTruncatedJson(jsonStr: string): string {
+  // Find complete question objects in the array
+  // Look for complete objects: { ... "tier": N ... }
+  const questionsMatch = jsonStr.match(/"questions"\s*:\s*\[/);
+  if (!questionsMatch) return jsonStr;
+
+  const startIdx = questionsMatch.index! + questionsMatch[0].length;
+  let depth = 1; // We're inside the array
+  let lastCompleteObject = -1;
+  let inString = false;
+  let escapeNext = false;
+
+  for (let i = startIdx; i < jsonStr.length; i++) {
+    const char = jsonStr[i];
+
+    if (escapeNext) {
+      escapeNext = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escapeNext = true;
+      continue;
+    }
+
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) continue;
+
+    if (char === '{') depth++;
+    if (char === '}') {
+      depth--;
+      if (depth === 1) {
+        // Completed an object inside the questions array
+        lastCompleteObject = i;
+      }
+    }
+    if (char === '[') depth++;
+    if (char === ']') depth--;
+  }
+
+  if (lastCompleteObject > 0 && lastCompleteObject < jsonStr.length - 1) {
+    // Truncate to last complete object and close the structure
+    console.log(`Repairing truncated JSON at position ${lastCompleteObject}`);
+    return jsonStr.slice(0, lastCompleteObject + 1) + ']}';
+  }
+
+  return jsonStr;
+}
+
+/**
  * Parse Claude's JSON response with error handling
  */
 function parseClaudeResponse(responseText: string): ClaudeExtractionResponse {
@@ -261,6 +318,24 @@ function parseClaudeResponse(responseText: string): ClaudeExtractionResponse {
       metadata: parsed.metadata || { totalQuestionsFound: parsed.questions.length },
     };
   } catch (error) {
+    // Try to repair truncated JSON
+    console.log('Initial parse failed, attempting to repair truncated JSON...');
+    const repairedJson = repairTruncatedJson(jsonStr);
+
+    try {
+      const parsed = JSON.parse(repairedJson);
+
+      if (parsed.questions && Array.isArray(parsed.questions)) {
+        console.log(`Repaired JSON successfully, found ${parsed.questions.length} questions`);
+        return {
+          questions: parsed.questions.map(validateQuestion),
+          metadata: { totalQuestionsFound: parsed.questions.length },
+        };
+      }
+    } catch {
+      // Repair also failed
+    }
+
     console.error('Failed to parse Claude response:', error);
     console.error('Response text:', responseText.slice(0, 500));
 

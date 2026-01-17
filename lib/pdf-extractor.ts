@@ -1,12 +1,15 @@
-// PDF text extraction using pdf-parse
+// PDF text extraction using pdf-parse with OCR fallback
 // Handles multi-page documents and text normalization
 
 import pdf from 'pdf-parse';
+import { extractTextWithOCR, hasMinimalContent } from './ocr-extractor';
 
 export interface PDFExtractionResult {
   text: string;
   pageCount: number;
   pages: string[];
+  usedOCR: boolean;
+  ocrConfidence?: number;
   metadata: {
     title?: string;
     author?: string;
@@ -14,28 +17,65 @@ export interface PDFExtractionResult {
   };
 }
 
+export interface ExtractionOptions {
+  forceOCR?: boolean;
+  ocrLanguage?: string;
+  ocrScale?: number;
+  onOCRProgress?: (page: number, total: number) => void;
+}
+
 /**
  * Extract text content from a PDF buffer
+ * Automatically falls back to OCR if regular text extraction yields minimal content
  */
-export async function extractTextFromPDF(buffer: Buffer): Promise<PDFExtractionResult> {
-  try {
-    const data = await pdf(buffer);
+export async function extractTextFromPDF(
+  buffer: Buffer,
+  options: ExtractionOptions = {}
+): Promise<PDFExtractionResult> {
+  const { forceOCR = false, ocrLanguage = 'eng', ocrScale = 2.0, onOCRProgress } = options;
 
-    // Split text into pages (pdf-parse combines all pages)
-    // We estimate page breaks by looking for common patterns
-    const pages = splitIntoPages(data.text, data.numpages);
+  try {
+    // First try regular text extraction (unless forceOCR is set)
+    if (!forceOCR) {
+      const data = await pdf(buffer);
+      const extractedText = normalizeText(data.text);
+
+      // Check if we got meaningful content
+      if (hasMinimalContent(extractedText)) {
+        const pages = splitIntoPages(data.text, data.numpages);
+        return {
+          text: extractedText,
+          pageCount: data.numpages,
+          pages: pages.map(normalizeText),
+          usedOCR: false,
+          metadata: {
+            title: data.info?.Title || undefined,
+            author: data.info?.Author || undefined,
+            creationDate: data.info?.CreationDate
+              ? parseDate(data.info.CreationDate)
+              : undefined,
+          },
+        };
+      }
+
+      // Text extraction yielded minimal content, fall through to OCR
+      console.log('   📄 Text extraction yielded minimal content, using OCR...');
+    }
+
+    // Use OCR for scanned PDFs
+    const ocrResult = await extractTextWithOCR(buffer, {
+      language: ocrLanguage,
+      scale: ocrScale,
+      onProgress: onOCRProgress,
+    });
 
     return {
-      text: normalizeText(data.text),
-      pageCount: data.numpages,
-      pages: pages.map(normalizeText),
-      metadata: {
-        title: data.info?.Title || undefined,
-        author: data.info?.Author || undefined,
-        creationDate: data.info?.CreationDate
-          ? parseDate(data.info.CreationDate)
-          : undefined,
-      },
+      text: normalizeText(ocrResult.text),
+      pageCount: ocrResult.pageCount,
+      pages: ocrResult.pages.map(normalizeText),
+      usedOCR: true,
+      ocrConfidence: ocrResult.confidence,
+      metadata: {},
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';

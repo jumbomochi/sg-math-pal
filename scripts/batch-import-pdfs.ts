@@ -1,6 +1,7 @@
 #!/usr/bin/env npx tsx
 // Batch import PDFs from a folder into StagedQuestion table
 
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { extractTextFromPDF, isValidPDF } from '../lib/pdf-extractor';
 import { extractQuestionsWithAI } from '../lib/question-ai-extractor';
@@ -62,9 +63,18 @@ async function processPDF(
       throw new Error('Invalid PDF format');
     }
 
-    // Extract text
-    const pdfResult = await extractTextFromPDF(buffer);
-    console.log(`   📝 Extracted ${pdfResult.pageCount} pages`);
+    // Extract text (with automatic OCR fallback for scanned PDFs)
+    const pdfResult = await extractTextFromPDF(buffer, {
+      onOCRProgress: (page, total) => {
+        process.stdout.write(`\r   🔍 OCR processing page ${page}/${total}...`);
+      },
+    });
+
+    if (pdfResult.usedOCR) {
+      console.log(`\r   🔍 OCR completed ${pdfResult.pageCount} pages (${Math.round(pdfResult.ocrConfidence || 0)}% confidence)`);
+    } else {
+      console.log(`   📝 Extracted ${pdfResult.pageCount} pages (text-based PDF)`);
+    }
 
     // Extract questions with AI
     const { questions } = await extractQuestionsWithAI(pdfResult.text, {
