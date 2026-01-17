@@ -150,14 +150,14 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 border-white/20">
         <div className="p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-xl font-bold">Review Question</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-xl font-bold text-white">Review Question</h2>
+              <p className="text-sm text-gray-400">
                 {question.sourceFile}
                 {question.sourceQuestionNum && ` - Q${question.sourceQuestionNum}`}
               </p>
@@ -169,53 +169,55 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
 
           {/* AI Reasoning */}
           {question.aiReasoning && (
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg text-sm">
-              <div className="font-medium text-blue-800 mb-1">AI Analysis</div>
-              <p className="text-blue-700">{question.aiReasoning}</p>
+            <div className="mb-4 p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg text-sm">
+              <div className="font-medium text-blue-300 mb-1">AI Analysis</div>
+              <p className="text-blue-200">{question.aiReasoning}</p>
               {question.aiConfidence !== null && (
-                <p className="text-blue-600 mt-1">Confidence: {Math.round(question.aiConfidence * 100)}%</p>
+                <p className="text-blue-300 mt-1">Confidence: {Math.round(question.aiConfidence * 100)}%</p>
               )}
             </div>
           )}
 
           {/* Preview */}
-          <div className="mb-4 p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-500 mb-2">Preview</div>
-            <MathDisplay math={content} />
+          <div className="mb-4 p-4 bg-white/10 border border-white/20 rounded-lg">
+            <div className="text-sm text-gray-400 mb-2">Preview</div>
+            <div className="text-white">
+              <MathDisplay math={content} />
+            </div>
           </div>
 
           {/* Content Editor */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Question Content (LaTeX supported)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Question Content (LaTeX supported)</label>
             <textarea
               value={content}
               onChange={e => setContent(e.target.value)}
               rows={4}
-              className="w-full border rounded-lg p-3 font-mono text-sm"
+              className="w-full bg-gray-800 border border-white/20 rounded-lg p-3 font-mono text-sm text-white placeholder-gray-500"
             />
           </div>
 
           {/* Answer */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Answer</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Answer</label>
               <input
                 type="text"
                 value={answer}
                 onChange={e => setAnswer(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                className="w-full bg-gray-800 border border-white/20 rounded-lg p-2 text-white placeholder-gray-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Answer Type</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Answer Type</label>
               <select
                 value={answerType}
                 onChange={e => setAnswerType(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                className="w-full bg-gray-800 border border-white/20 rounded-lg p-2 text-white"
               >
-                <option value="numeric">Numeric</option>
-                <option value="exact">Exact Match</option>
-                <option value="multiple-choice">Multiple Choice</option>
+                <option value="numeric" className="bg-gray-800">Numeric</option>
+                <option value="exact" className="bg-gray-800">Exact Match</option>
+                <option value="multiple-choice" className="bg-gray-800">Multiple Choice</option>
               </select>
             </div>
           </div>
@@ -223,20 +225,20 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
           {/* Topic and Tier */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Topic</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Topic</label>
               <select
                 value={selectedTopic}
                 onChange={e => setSelectedTopic(e.target.value)}
-                className="w-full border rounded-lg p-2"
+                className="w-full bg-gray-800 border border-white/20 rounded-lg p-2 text-white"
               >
-                <option value="">Select topic...</option>
+                <option value="" className="bg-gray-800">Select topic...</option>
                 {topics.map(t => (
-                  <option key={t} value={t}>{t}</option>
+                  <option key={t} value={t} className="bg-gray-800">{t}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Tier (press 1-4)</label>
+              <label className="block text-sm font-medium text-gray-300 mb-1">Tier (press 1-4)</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4].map(t => (
                   <button
@@ -244,8 +246,8 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
                     onClick={() => setSelectedTier(t)}
                     className={`flex-1 py-2 rounded-lg border-2 font-medium transition-colors ${
                       selectedTier === t
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-nebula-purple bg-nebula-purple/30 text-white'
+                        : 'border-white/20 text-gray-300 hover:border-white/40'
                     }`}
                   >
                     {t}
@@ -257,7 +259,7 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
 
           {/* Hints */}
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Hints (optional)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Hints (optional)</label>
             {hints.map((hint, i) => (
               <div key={i} className="flex gap-2 mb-2">
                 <input
@@ -268,7 +270,7 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
                     newHints[i] = e.target.value;
                     setHints(newHints);
                   }}
-                  className="flex-1 border rounded-lg p-2 text-sm"
+                  className="flex-1 bg-gray-800 border border-white/20 rounded-lg p-2 text-sm text-white placeholder-gray-500"
                   placeholder={`Hint ${i + 1}`}
                 />
                 <Button
@@ -293,18 +295,18 @@ export function ReviewModal({ question, onClose, onSaved }: Props) {
 
           {/* Error */}
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg flex items-center gap-2">
+            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 text-red-300 rounded-lg flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               {error}
             </div>
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="text-xs text-gray-500">
-              Shortcuts: <kbd className="bg-gray-100 px-1 rounded">A</kbd> Approve,{' '}
-              <kbd className="bg-gray-100 px-1 rounded">R</kbd> Reject,{' '}
-              <kbd className="bg-gray-100 px-1 rounded">1-4</kbd> Set tier
+          <div className="flex items-center justify-between pt-4 border-t border-white/10">
+            <div className="text-xs text-gray-400">
+              Shortcuts: <kbd className="bg-white/10 px-1 rounded text-gray-300">A</kbd> Approve,{' '}
+              <kbd className="bg-white/10 px-1 rounded text-gray-300">R</kbd> Reject,{' '}
+              <kbd className="bg-white/10 px-1 rounded text-gray-300">1-4</kbd> Set tier
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={handleReject} disabled={saving}>
